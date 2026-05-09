@@ -33,7 +33,7 @@ def predict():
     
     if model is None:
         print("Loading model...")
-        model = load_model(MODEL_PATH, compile=False, custom_objects={"TFOpLambda": TFOpLambda})
+        model = load_model(MODEL_PATH, compile=False)
         print("Model loaded")
 
     if "image" not in request.files:
