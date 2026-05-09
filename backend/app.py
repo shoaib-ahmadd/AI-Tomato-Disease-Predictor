@@ -9,6 +9,9 @@ import os
 
 app = Flask(__name__)
 CORS(app)
+@app.route("/")
+def home():
+    return "AI Tomato Disease Backend Running Successfully 🚀"
 
 print("Loading AI model...")
 from tensorflow.keras.models import load_model
