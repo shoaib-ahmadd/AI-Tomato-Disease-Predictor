@@ -1,0 +1,397 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tomato Leaf Disease Detection</title>
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+
+      <div class="brand">
+        <div class="logo">TL</div>
+
+        <div>
+          <div class="title">
+            Tomato Leaf Disease Detection
+          </div>
+
+          <div class="subtitle">
+            Upload a leaf image to get prediction + disease report.
+          </div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <span class="pill">
+          ResNet50 + DenseNet121 + MobileNetV3 + CustomCNN
+        </span>
+      </div>
+
+    </header>
+
+    <!-- MAIN -->
+    <main class="grid">
+
+      <!-- LEFT CARD -->
+      <section class="card">
+
+        <div class="card-header">
+          <h2>Upload</h2>
+
+          <p>
+            Drag & drop or select an image.
+            Best results: single leaf, good lighting, no blur.
+          </p>
+        </div>
+
+        <!-- DROPZONE -->
+        <div
+          id="dropzone"
+          class="dropzone"
+          tabindex="0"
+          role="button"
+          aria-label="Upload image"
+        >
+
+          <input
+            id="fileInput"
+            type="file"
+            accept="image/*"
+            hidden
+          />
+
+          <div class="dz-inner">
+
+            <div class="dz-icon">
+              ⬆️
+            </div>
+
+            <div class="dz-title">
+              Drop image here
+            </div>
+
+            <div class="dz-sub">
+              or <span class="link">browse</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="preview-row">
+
+          <div class="preview">
+
+            <img
+              id="previewImg"
+              alt="Preview"
+            />
+
+            <div
+              id="previewEmpty"
+              class="preview-empty"
+            >
+              No image selected
+            </div>
+
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="actions">
+
+            <button
+              id="predictBtn"
+              class="btn btn-primary"
+              disabled
+            >
+              Predict
+            </button>
+
+            <button
+              id="resetBtn"
+              class="btn btn-ghost"
+              disabled
+            >
+              Reset
+            </button>
+
+            <div
+              id="smallHint"
+              class="hint"
+            >
+              Tip: Keep the leaf centered; avoid multiple leaves in frame.
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TOAST -->
+        <div
+          id="toast"
+          class="toast"
+          aria-live="polite"
+        ></div>
+
+      </section>
+
+      <!-- RIGHT CARD -->
+      <section class="card">
+
+        <div class="card-header">
+
+          <h2>Result</h2>
+
+          <p>
+            Prediction and recommended advisory details.
+          </p>
+
+        </div>
+
+        <!-- IDLE -->
+        <div
+          id="stateIdle"
+          class="state state-muted"
+        >
+          No prediction yet.
+          Upload an image and click <b>Predict</b>.
+        </div>
+
+        <!-- LOADING -->
+        <div
+          id="stateLoading"
+          class="state state-loading hidden"
+        >
+
+          <div class="spinner"></div>
+
+          <div>
+
+            <div class="loading-title">
+              Running inference…
+            </div>
+
+            <div class="loading-sub">
+              Please wait. This may take a moment on CPU.
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ERROR -->
+        <div
+          id="stateError"
+          class="state state-error hidden"
+        >
+
+          <div class="err-title">
+            Prediction failed
+          </div>
+
+          <div
+            id="errMsg"
+            class="err-msg"
+          ></div>
+
+        </div>
+
+        <!-- RESULT -->
+        <div
+          id="resultPanel"
+          class="result hidden"
+        >
+
+          <!-- TOP RESULT -->
+          <div class="result-top">
+
+            <!-- PREDICTION -->
+            <div class="kv">
+
+              <div class="k">
+                Prediction
+              </div>
+
+              <div
+                id="predClass"
+                class="v v-pred"
+              >
+                —
+              </div>
+
+            </div>
+
+            <!-- CONFIDENCE -->
+            <div class="kv">
+
+              <div class="k">
+                Confidence
+              </div>
+
+              <div class="confidence-wrap">
+
+                <div class="confidence-bar-bg">
+
+                  <div
+                    id="confidenceBar"
+                    class="confidence-bar"
+                  ></div>
+
+                </div>
+
+                <div
+                  id="confidenceText"
+                  class="confidence-text"
+                >
+                  0% Confidence
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- LATENCY -->
+            <div class="kv">
+
+              <div class="k">
+                Latency
+              </div>
+
+              <div
+                id="latency"
+                class="v"
+              >
+                —
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- WARNING -->
+          <div
+            id="warning"
+            class="warning hidden"
+          ></div>
+
+          <div class="divider"></div>
+
+          <!-- REPORT -->
+          <div class="report">
+
+            <div class="report-title">
+              Disease Report
+            </div>
+
+            <!-- CAUSED BY -->
+            <div class="report-block">
+
+              <div class="block-title">
+                Caused By
+              </div>
+
+              <div
+                id="pathogen"
+                class="block-body"
+              >
+                —
+              </div>
+
+            </div>
+
+            <!-- GRID -->
+            <div class="report-grid">
+
+              <!-- SPRAY -->
+              <div class="report-block">
+
+                <div class="block-title">
+                  Recommended Spray
+                </div>
+
+                <ul
+                  id="spray"
+                  class="bullets"
+                ></ul>
+
+              </div>
+
+              <!-- REMEDY -->
+              <div class="report-block">
+
+                <div class="block-title">
+                  Remedy
+                </div>
+
+                <ul
+                  id="remedy"
+                  class="bullets"
+                ></ul>
+
+              </div>
+
+              <!-- PREVENTION -->
+              <div class="report-block">
+
+                <div class="block-title">
+                  Prevention
+                </div>
+
+                <ul
+                  id="prevention"
+                  class="bullets"
+                ></ul>
+
+              </div>
+
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="footer-actions">
+
+              <button
+                id="copyJsonBtn"
+                class="btn btn-ghost"
+              >
+                Copy JSON
+              </button>
+
+              <button
+                id="downloadJsonBtn"
+                class="btn btn-ghost"
+              >
+                Download JSON
+              </button>
+
+            </div>
+
+            <!-- DISCLAIMER -->
+            <div class="disclaimer">
+
+              Note:
+              Advisory is informational only.
+              Follow local agricultural guidelines
+              and consult experts when needed.
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+
+</body>
+</html>
+
