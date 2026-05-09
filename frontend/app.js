@@ -126,6 +126,11 @@ predictBtn.addEventListener("click", async () => {
             }
         );
 
+        if (!response.ok) {
+            throw new Error("Server error");
+            }
+
+        
         const data = await response.json();
 
         stateLoading.classList.add("hidden");
