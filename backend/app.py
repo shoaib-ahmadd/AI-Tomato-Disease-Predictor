@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 print("Loading AI model...")
-from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import TFOpLambda 
 MODEL_PATH = "model/model.h5"
 model = None
 
@@ -33,7 +33,7 @@ def predict():
     
     if model is None:
         print("Loading model...")
-        model = load_model(MODEL_PATH, compile=False)
+        model = load_model(MODEL_PATH, compile=False, custom_objects={"TFOpLambda": TFOpLambda})
         print("Model loaded")
 
     if "image" not in request.files:
