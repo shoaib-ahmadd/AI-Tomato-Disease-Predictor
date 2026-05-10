@@ -1,4 +1,4 @@
-# AI Powered Tomato Leaf Disease Prediction using Machine Learning
+# AI Tomato Leaf Disease Prediction System
 
 <div align="center">
         
