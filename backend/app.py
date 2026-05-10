@@ -8,7 +8,13 @@ import io
 import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
+CORS(app, resources={r"/*": {"origins": [
+    "*",
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+    "https://ai-tomato-disease-frontend.netlify.app"
+]}}, supports_credentials=True)
 
 MODEL_PATH = "model/model.h5"
 IMG_SIZE = 220
@@ -55,7 +61,6 @@ def load_model_background():
         model_loading = False
         print(f"Model load failed: {str(e)}")
 
-# Background mein load karo — port block nahi hoga
 thread = threading.Thread(target=load_model_background)
 thread.daemon = True
 thread.start()
@@ -81,7 +86,6 @@ def predict():
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"}), 200
 
-    # Model abhi load ho raha hai
     if not model_loaded:
         if model_loading:
             return jsonify({
