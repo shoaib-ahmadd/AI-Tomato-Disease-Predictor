@@ -86,15 +86,14 @@ predictBtn.addEventListener("click", async () => {
 
 async function runPrediction(retryCount = 0) {
 
-    const MAX_RETRIES = 5;
-    const RETRY_DELAY = 5000; // 5 seconds
+    const MAX_RETRIES = 10;
+    const RETRY_DELAY = 8000; // 8 seconds
 
     stateIdle.classList.add("hidden");
     stateError.classList.add("hidden");
     resultPanel.classList.add("hidden");
     stateLoading.classList.remove("hidden");
 
-    // Loading message update karo retry pe
     const loadingTitle = document.querySelector(".loading-title");
     const loadingSub = document.querySelector(".loading-sub");
 
@@ -102,8 +101,8 @@ async function runPrediction(retryCount = 0) {
         loadingTitle.textContent = "Running inference…";
         loadingSub.textContent = "Please wait. This may take a moment on CPU.";
     } else {
-        loadingTitle.textContent = `Model load ho raha hai… (${retryCount}/${MAX_RETRIES})`;
-        loadingSub.textContent = "Backend warm up ho raha hai, 5 seconds mein retry…";
+        loadingTitle.textContent = `Model is loading… (${retryCount}/${MAX_RETRIES})`;
+        loadingSub.textContent = "Backend is warming up, retrying in 8 seconds…";
     }
 
     try {
@@ -118,19 +117,19 @@ async function runPrediction(retryCount = 0) {
             }
         );
 
-        // 503 = Model abhi load ho raha hai — retry karo
+        // 503 = Model still loading — retry
         if (response.status === 503) {
             if (retryCount < MAX_RETRIES) {
                 await sleep(RETRY_DELAY);
                 return runPrediction(retryCount + 1);
             } else {
-                throw new Error("Backend warm up nahi hua. Please 1 minute baad try karo.");
+                throw new Error("Backend is taking too long. Please click Predict again in 1 minute.");
             }
         }
 
         // 502 = Server crash
         if (response.status === 502) {
-            throw new Error("Backend crash ho gaya (502). Render logs check karo.");
+            throw new Error("Server error (502). Please try again in a moment.");
         }
 
         // Other errors
