@@ -1,7 +1,7 @@
 # AI Tomato Leaf Disease Detection System
 
-<h3>AI Powered Tomato Leaf Disease Prediction using Machine Learning</h3>
-
+<div align="center">
+        
 <!-- GitHub Stats -->
 <img src="https://img.shields.io/github/stars/shoaib-ahmadd/AI-Tomato-Disease-Predictor?style=for-the-badge&color=yellow" />
 <img src="https://img.shields.io/github/forks/shoaib-ahmadd/AI-Tomato-Disease-Predictor?style=for-the-badge&color=blue" />
